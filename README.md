@@ -8,9 +8,15 @@ This is the code snippet I came up while I was writing the multi-threaded versio
 
 The code contains a self-implemented thread barrier with pthread condition variable. The reason I did it is that I met some strange behaviors with `pthread_barrier_wait`, and it's hard to debug since the source code is either assembly code, or not available. So I implemented my own thread barrier.
 
-## Usage
-
-I will add it later
+## Functions
+### initControlHandle - Initilize the control handle struct
+#### Synopsis
+'''c
+#include "src/thread_control.h"
+ThreadControl* initControlHandle(pthread_mutex_t* mutex, thread_barrier_t* rdy, thread_barrier_t* ack, int number_of_threads);
+'''
+#### Description
+This function returns a pointer to the struct of `ThreadControl`, which is defined in [thread_control.h](src/thread_control.h)
 
 ## License
 
