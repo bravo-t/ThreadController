@@ -14,4 +14,6 @@ I will add it later
 
 ## License
 
-This library is licensed under [DBAD](LICENSE.md) license.
+This library is licensed under [DBAD](LICENSE.md) license. 
+
+I don't care if you make it commercial or close-sourced, but I do care if there're any issues, or any improvements I can do to it. So if you meet any issues with it, or have anything want me to know, you are very welcomed to [create an issue](https://github.com/bravo-t/ThreadController/issues/new).
