@@ -42,6 +42,7 @@ This function listens the signal through `handle`, and execute instructions from
 None
 ### Examples
 The repo contains a [example.c](example.c) that illustrate how these functions are used. Please clone the repo, compile it with `make`, and execute `./example`.
+
 Below is the code snippet from [example.c](example.c), please check it for the full code. 
 In main() function, which will also be referred as the main thread:
 ```c
