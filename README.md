@@ -19,7 +19,7 @@ ThreadControl* initControlHandle(pthread_mutex_t* mutex,
 #### Description
 This function initializes a struct of `ThreadControl`, which is defined in [thread_control.h](src/thread_control.h), and returns a pointer to it. The pointer will be used as the control handle among all slave threads you want to control, and the master thread who is responsible to give instructions.
 #### Return value
-This function will return a valid pointer if it successes, and `NULL` pointer in case it failed.
+This function will return a valid pointer if it succeeded, and `NULL` pointer in case it failed.
 ### threadController_master - Control handle manipulator from master thread
 #### Synopsis
 ```c
@@ -46,6 +46,8 @@ The repo contains a [example.c](example.c) that illustrates how these functions 
 Below is the code snippet from [example.c](example.c), please check it for the full code. 
 In main() function, which will also be referred as the main thread:
 ```c
+#include "src/thread_barrier.h"
+#include "src/thread_control.h"
 pthread_mutex_t test_mutex = PTHREAD_MUTEX_INITIALIZER;
 int main() {
     int number_of_threads = 4;
@@ -53,7 +55,8 @@ int main() {
     thread_barrier_t acknowledge = THREAD_BARRIER_INITIALIZER;
     ThreadControl* control_handle = initControlHandle(&test_mutex, 
     	&instruction_ready, &acknowledge, number_of_threads);
-    /* Code to start slave threads */
+    
+    /* Code to create slave threads */
 
     /* Signal slave threads to continue */
     threadController_master(control_handle, THREAD_RESUME);
@@ -64,6 +67,24 @@ int main() {
     return 0;
 }
 ```
+Function `initControlHandle` needs one pthread mutex, one int, and two `thread_barrier_t` pointers to work. `thread_barrier_t` is defined in [thread_barrier.h](src/thread_barrier.h), and it can be created with a default initializer `THREAD_BARRIER_INITIALIZER`. 
+
+I prefer to write slave threads like below, so that they can be restarted after one iteration, or exit according to the insructions from master slave:
+```c
+void* test(void* a) {
+    /* Get arguments from the void* pointer */
+    ThreadControl* control_handle = (*args).handle;
+    while(1) {
+        threadController_slave(control_handle);
+
+        /* Code that actually does the work */
+
+    }
+}
+```
+Note the code that is useful to you is inside the a infinite loop, and the exit point of slave thread is actually inside `threadController_slave` function. 
+Slave threads are created normally, and then they enter `threadController_slave`, stop and wait for the instruction. They will stop there until a instruction has been sent with `threadController_master`. After slave threads finish one iteration, they enters `threadController_slave` and wait for another instruction again. If the instruction is `THREAD_EXIT`, they will exit via `pthread_exit` in `threadController_slave`.
+
 ## License
 
 This library is licensed under [DBAD](LICENSE.md) license. 
