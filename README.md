@@ -7,7 +7,7 @@ A simple library that makes you control your pthreads.
     * [initControlHandle](#initcontrolhandle---initilize-the-control-handle-struct)
     * [threadController_master](#threadcontroller_master---control-handle-manipulator-from-master-thread)
     * [threadController_slave](#threadcontroller_slave---signals-slave-thread-to-resume-or-exit)
-  * [Example](#example)
+  * [Examples](#examples)
   * [License](#license)
 
 ## What is this?
