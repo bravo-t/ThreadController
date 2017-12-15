@@ -2,13 +2,13 @@
 
 A simple library that makes you control your pthreads.
 ### Table of contents
-  * [What it this?](#what-is-this?)
+  * [What it this?](#what-is-this)
   * [Functions](#functions)
     * [initControlHandle](#initcontrolhandle---initilize-the-control-handle-struct)
-    * [threadController_master](#threadController_master---Control-handle-manipulator-from-master-thread)
-    * [threadController_slave](#threadController_slave---Signals-slave-thread-to-resume,-or-exit)
-  * Example
-  * License
+    * [threadController_master](#threadcontroller_master---control-handle-manipulator-from-master-thread)
+    * [threadController_slave](#threadcontroller_slave---signals-slave-thread-to-resume-or-exit)
+  * [Example](#example)
+  * [License](#license)
 
 ## What is this?
 
