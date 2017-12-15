@@ -1,5 +1,15 @@
 # ThreadController
 
+A simple library that makes you control your pthreads.
+### Table of contents
+  * [What it this?](#what-is-this?)
+  * [Functions](#functions)
+    * [initControlHandle](#initcontrolhandle---initilize-the-control-handle-struct)
+    * [threadController_master](#threadController_master---Control-handle-manipulator-from-master-thread)
+    * [threadController_slave](#threadController_slave---Signals-slave-thread-to-resume,-or-exit)
+  * Example
+  * License
+
 ## What is this?
 
 It's a library that can suspend, resume and exit a pthread. The controller works only with threads, not processes.
