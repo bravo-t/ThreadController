@@ -50,7 +50,8 @@ int main() {
     int number_of_threads = 4;
     thread_barrier_t instruction_ready = THREAD_BARRIER_INITIALIZER;
     thread_barrier_t acknowledge = THREAD_BARRIER_INITIALIZER;
-    ThreadControl* control_handle = initControlHandle(&test_mutex, &instruction_ready, &acknowledge, number_of_threads);
+    ThreadControl* control_handle = initControlHandle(&test_mutex, 
+    	&instruction_ready, &acknowledge, number_of_threads);
     /* Code to start slave threads */
 
     /* Signal slave threads to continue */
