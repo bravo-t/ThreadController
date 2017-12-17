@@ -8,6 +8,7 @@ A simple library that makes you control your pthreads.
     * [threadController_master](#threadcontroller_master---control-handle-manipulator-from-master-thread)
     * [threadController_slave](#threadcontroller_slave---signals-slave-thread-to-resume-or-exit)
   * [Examples](#examples)
+  * [Barrier](#Barrier)
   * [License](#license)
 
 ## What is this?
@@ -16,7 +17,7 @@ It's a library that can suspend, resume and exit a pthread. The controller works
 
 This is the code snippet I came up while I was writing the multi-threaded version of [NN](https://github.com/bravo-t/NN). It contains mainly two functions, one that manipulates a control handle, which is called in main thread, the thread that creates other slave workers, and the other one called by slave threads to receive instructions from the main thread.
 
-The code contains a self-implemented thread barrier with pthread condition variable. The reason I did it is that I met some strange behaviors with `pthread_barrier_wait`, and it's hard to debug since the source code is either assembly code, or not available. So I implemented my own thread barrier.
+The code contains a self-implemented thread barrier type `thread_barrier_t`, with pthread condition variable. The reason I did it is that I met some strange behaviors with `pthread_barrier_wait`. I'm quite sure that's because I misused it, but somehow it's hard to debug since the source code is either assembly code, or not available. So I implemented my own thread barrier. 
 
 ## Functions
 ### initControlHandle - Initilize the control handle struct
@@ -94,7 +95,9 @@ void* test(void* a) {
 ```
 Note the code that is useful to you is inside the a infinite loop, and the exit point of slave thread is actually inside `threadController_slave` function. 
 Slave threads are created normally, and then they enter `threadController_slave`, stop and wait for the instruction. They will stop there until a instruction has been sent with `threadController_master`. After slave threads finish one iteration, they enters `threadController_slave` and wait for another instruction again. If the instruction is `THREAD_EXIT`, they will exit via `pthread_exit` in `threadController_slave`.
+## Barrier
 
+The ThreadController library contains a self-implemented thread barrier type `thread_barrier_t`, and some related functions. The barrier can only be used within threads created by one process, the same as the `pthread_barrier_t` you initialized with the default attribute.
 ## License
 
 This library is licensed under [DBAD](LICENSE.md) license. 
