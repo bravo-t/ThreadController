@@ -94,7 +94,7 @@ void* test(void* a) {
     }
 }
 ```
-In above way of using `ThreadController`, master thread will be blocked until `threadController_slave(control_handle,CONTROL_EXEC_COMPLETE);` is reached. If a thread is doing something that will not be consumed by any other threads, means there will be no risk of racing, you can unblock the master thread by using `threadController_slave(control_handle,CONTROL_EXEC_COMPLETE);` right after `threadController_slave(control_handle,CONTROL_WAIT_INST);`:
+In above way of using `ThreadController`, master thread will be blocked until `threadController_slave(control_handle,CONTROL_EXEC_COMPLETE)` is reached. If a thread is doing something that will not be consumed by any other threads, means there will be no risk of racing, you can unblock the master thread by using `threadController_slave(control_handle,CONTROL_EXEC_COMPLETE)` right after `threadController_slave(control_handle,CONTROL_WAIT_INST)`:
 ```c
 void* test(void* a) {
     /* Get arguments from the void* pointer */
