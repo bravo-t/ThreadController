@@ -25,7 +25,8 @@ int main() {
     int number_of_threads = 4;
     thread_barrier_t instruction_ready = THREAD_BARRIER_INITIALIZER;
     thread_barrier_t acknowledge = THREAD_BARRIER_INITIALIZER;
-    ThreadControl* control_handle = initControlHandle(&test_mutex, &instruction_ready, &acknowledge, number_of_threads);
+    thread_barrier_t thread_complete = THREAD_BARRIER_INITIALIZER;
+    ThreadControl* control_handle = initControlHandle(&test_mutex, &instruction_ready, &acknowledge,&thread_complete, number_of_threads);
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
@@ -69,11 +70,12 @@ void* test(void* a) {
     int id = (*args).id;
     ThreadControl* control_handle = (*args).handle;
     while(1) {
-        threadController_slave(control_handle);
+        threadController_slave(control_handle,CONTROL_WAIT_INST);
         pthread_mutex_lock(&printf_mutex);
         printf("Thread %d resuming\n", id);
         pthread_mutex_unlock(&printf_mutex);
         sleep(1);
+        threadController_slave(control_handle,CONTROL_EXEC_COMPLETE);
     }
 }
 
@@ -84,4 +86,3 @@ void microsecSleep (long ms) {
     delay.tv_usec = ms - 1e6*delay.tv_sec;
     select(0,NULL,NULL,NULL,&delay);
 }
-
