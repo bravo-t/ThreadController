@@ -25,7 +25,7 @@ The code contains a self-implemented thread barrier type `thread_barrier_t`, wit
 ```c
 #include "src/thread_control.h"
 ThreadControl* initControlHandle(pthread_mutex_t* mutex, 
-	thread_barrier_t* rdy, thread_barrier_t* ack, int number_of_threads);
+	thread_barrier_t* rdy, thread_barrier_t* ack, thread_barrier_t* complete, int number_of_threads);
 ```
 #### Description
 This function initializes a struct of `ThreadControl`, which is defined in [thread_control.h](src/thread_control.h), and returns a pointer to it. The pointer will be used as the control handle among all slave threads you want to control, and the master thread who is responsible to give instructions.
@@ -45,10 +45,10 @@ None
 #### Synopsis
 ```c
 #include "src/thread_control.h"
-void threadController_slave(ThreadControl* handle);
+void threadController_slave(ThreadControl* handle, int state);
 ```
 #### Description
-This function listens the signal through `handle`, and execute instructions from `handle` once the instruction is available.
+This function listens the signal through `handle`, and execute instructions from `handle` once the instruction is available. `state` is the current state of the slave thread is on, it can be `CONTROL_WAIT_INST` or `CONTROL_EXEC_COMPLETE`. In a slave thread `threadController_slave` should be used twice around the actual task of the thread, to block the master thread from giving orders to other slaves while this one is still working on something, to prevent racing from happening. If there's no risk of racing between this thread and other threads, you can just use `CONTROL_EXEC_COMPLETE` right after `CONTROL_WAIT_INST` to unblock master thread.
 #### Return value
 None
 ### Examples
@@ -86,9 +86,24 @@ void* test(void* a) {
     /* Get arguments from the void* pointer */
     ThreadControl* control_handle = (*args).handle;
     while(1) {
-        threadController_slave(control_handle);
+        threadController_slave(control_handle,CONTROL_WAIT_INST);
 
         /* Code that actually does the work */
+
+        threadController_slave(control_handle,CONTROL_EXEC_COMPLETE);
+    }
+}
+```
+In above way of using `ThreadController`, master thread will be blocked until `threadController_slave(control_handle,CONTROL_EXEC_COMPLETE);` is reached. If a thread is doing something that will not be consumed by any other threads, means there will be no risk of racing, you can unblock the master thread by using `threadController_slave(control_handle,CONTROL_EXEC_COMPLETE);` right after `threadController_slave(control_handle,CONTROL_WAIT_INST);`:
+```c
+void* test(void* a) {
+    /* Get arguments from the void* pointer */
+    ThreadControl* control_handle = (*args).handle;
+    while(1) {
+        threadController_slave(control_handle,CONTROL_WAIT_INST);
+        threadController_slave(control_handle,CONTROL_EXEC_COMPLETE);
+        
+        /* Code that actually does the work, and this work won't create any racing issues */
 
     }
 }
